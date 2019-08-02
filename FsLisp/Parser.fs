@@ -68,7 +68,7 @@ let dottedList =
 let quotedExpression =
     singleQuote >>. expression |>> QuotedExpression
 
-expressionRef := spaces >>. choice 
+expressionRef := choice 
     [
         quotedExpression
         dottedList
@@ -77,4 +77,4 @@ expressionRef := spaces >>. choice
     ]
 
 let parse (input: string) =
-    run (many expression) input
+    run (spaces >>. many expression) input
