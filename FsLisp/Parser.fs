@@ -8,16 +8,16 @@ module StringUtility =
         String(List.toArray charList)
 
 type LispVal =
-    | List of LispVal list
+    | QuotedExpression of LispVal
     | DottedList of LispVal * LispVal
+    | List of LispVal list
     | Symbol of string
-    | QuotedSymbol of int * string
     | Integer of int
     | Float of float
     | Ratio of int * int
     | StringLiteral of string
 
-//let singleQuote = pchar '''
+let singleQuote = pchar '''
 let doubleQuote = pchar '"'
 let openParenthesis = pchar '(' .>> spaces
 let closeParenthesis = pchar ')' .>> spaces
@@ -65,11 +65,15 @@ let dottedList =
     // Need to backtrack if "." not found in case we're parsing a regular list
     attempt (between openParenthesis closeParenthesis dotExpression)
 
+let quotedExpression =
+    singleQuote >>. expression |>> QuotedExpression
+
 expressionRef := choice 
     [
-        atom
+        quotedExpression
         dottedList
         list
+        atom
     ]
 
 let parse (input: string) =
