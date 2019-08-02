@@ -1,10 +1,12 @@
-# Lisp BNF Grammar
+# FsLisp
+
+FsLisp is a Lisp interpreter written in F#. Currently, all it does is parse Lisp code into an AST using [FParsec](https://github.com/stephan-tolksdorf/fparsec).
+
+## Grammar
 
 The following grammar is used by the interpreter:
 
 ```
-// TODO: Add quoted s_expr
-
 S_EXPR ->  ATOM | DOTTED_LIST | LIST | QUOTED_S_EXPR
 
 ATOM -> SYMBOL | VALUE
