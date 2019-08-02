@@ -3,19 +3,20 @@
 The following grammar is used by the interpreter:
 
 ```
-s_expression = atomic_symbol | "(" s_expression "."s_expression ")" | list 
-   
-list = "(" s_expression < s_expression > ")"
+// TODO: Add quoted s_expr
 
-atomic_symbol = letter atom_part
+S_EXPR ->  | ATOM | DOTTED_LIST | LIST
 
-atom_part = empty / letter atom_part / number atom_part
+DOTTED_LIST -> "(" S_EXPR "." S_EXPR ")"
+LIST -> "(" S_EXPR < S_EXPR > ")"
 
-letter = "a" / "b" / " ..." / "z"
+ATOM -> SYMBOL | VALUE
 
-number = "1" / "2" / " ..." / "9"
+SYMBOL -> STRING
 
-empty = " "
+VALUE -> INTEGER | FLOAT | RATIO | STRING_LITERAL
+
+RATIO -> INTEGER "/" INTEGER
 ```
 
 Based on a grammar example provided by [Wil Chung](https://iamwilhelm.github.io/bnf-examples/lisp).
