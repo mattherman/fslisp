@@ -77,4 +77,4 @@ expressionRef := spaces >>. choice
     ]
 
 let parse (input: string) =
-    run (many1 expression) input
+    run (many expression) input
