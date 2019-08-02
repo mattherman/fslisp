@@ -5,7 +5,7 @@ The following grammar is used by the interpreter:
 ```
 // TODO: Add quoted s_expr
 
-S_EXPR ->  | ATOM | DOTTED_LIST | LIST
+S_EXPR ->  ATOM | DOTTED_LIST | LIST
 
 DOTTED_LIST -> "(" S_EXPR "." S_EXPR ")"
 LIST -> "(" S_EXPR < S_EXPR > ")"
