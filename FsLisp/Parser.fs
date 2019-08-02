@@ -3,10 +3,6 @@ module Parser
 open FParsec
 open System
 
-module StringUtility =
-    let charListToStr charList =
-        String(List.toArray charList)
-
 type LispVal =
     | QuotedExpression of LispVal
     | DottedList of LispVal * LispVal
