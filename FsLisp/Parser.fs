@@ -51,7 +51,7 @@ let value =
     (ratio <|> number <|> stringLiteral)
 
 let atom =
-    (symbol <|> value) .>> spaces
+    (value <|> symbol) .>> spaces
 
 let expression, expressionRef = createParserForwardedToRef<LispVal, unit>()
 
@@ -68,7 +68,7 @@ let dottedList =
 let quotedExpression =
     singleQuote >>. expression |>> QuotedExpression
 
-expressionRef := choice 
+expressionRef := spaces >>. choice 
     [
         quotedExpression
         dottedList
