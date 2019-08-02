@@ -1,8 +1,8 @@
 ﻿open System
 
 let eval (text: string) =
-    let token = text |> Parser.parse
-    token.ToString()
+    let ast = text |> Parser.parse
+    ast.ToString()
 
 let print (result: string)=
     Console.WriteLine(result)
