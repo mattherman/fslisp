@@ -1,8 +1,12 @@
 ﻿open System
 
+open Shared
+
 let eval (text: string) =
-    let ast = text |> Parser.parse
-    ast.ToString()
+    let result = text |> Parser.parse
+    match result with
+    | Success values -> List.head values |> VirtualMachine.eval |> string
+    | Failure -> "Failed to parse the input"
 
 let print (result: string)=
     Console.WriteLine(result)

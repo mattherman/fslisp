@@ -64,5 +64,8 @@ expressionRef := choice
         atom
     ]
 
-let parse (input: string) =
-    run (spaces >>. many expression) input
+let parse (input: string) : ParseResult =
+    let result = run (spaces >>. many expression) input
+    match result with
+    | ParserResult.Success (lispVal, _, _) -> Success lispVal
+    | ParserResult.Failure _ -> Failure

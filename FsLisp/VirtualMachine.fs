@@ -2,22 +2,16 @@ module VirtualMachine
 
 open Shared
 
-type ConsValue = string
-type Cons = {
-    Car: Cons
-    Cdr: Cons option
-}
+let execute symbol parameters =
+    List parameters
 
-let rec cons (lispVal: LispVal) =
+let rec eval lispVal =
     match lispVal with
-    | List values -> { Car = cons (List.head values); Cdr = None }
-    | QuotedExpression exp -> { Car = ""; Cdr = None }
-    | DottedList (left, right) -> { Car = ""; Cdr = None }
-    | Symbol s -> { Car = s; Cdr = None }
-    | Integer i -> { Car = string i; Cdr = None }
-    | Float f -> { Car = string f; Cdr = None }
-    | Ratio (num, denom) -> { Car = sprintf "%i/%i" num denom; Cdr = None }
-    | StringLiteral str -> { Car = str; Cdr = None }
-
-let evaluate ast = 
-    cons ast
+    | List values -> execute (List.head values) (List.tail values)
+    | QuotedExpression exp -> exp
+    | DottedList (left, right) -> DottedList (left, right)
+    | Symbol s -> Symbol s
+    | Integer i -> Integer i
+    | Float f -> Float f
+    | Ratio (num, denom) -> Ratio (num, denom)
+    | StringLiteral str -> StringLiteral str

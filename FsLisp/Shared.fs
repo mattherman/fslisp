@@ -9,3 +9,7 @@ type LispVal =
     | Float of float
     | Ratio of int * int
     | StringLiteral of string
+
+type ParseResult =
+    | Success of LispVal list
+    | Failure
