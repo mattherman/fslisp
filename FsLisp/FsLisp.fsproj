@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Shared.fs" />
+    <Compile Include="VirtualMachine.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
