@@ -2,27 +2,31 @@
 
 open Shared
 
+let read = Console.ReadLine
+
 let eval (text: string) =
     let result = text |> Parser.parse
     match result with
-    | Success values -> 
-        Console.WriteLine(lispValString (List.head values))
-        List.head values |> VirtualMachine.eval |> lispValString
-    | Failure -> "Failed to parse the input"
+    | Ok values -> 
+        let evalResult = List.head values |> VirtualMachine.eval
+        match evalResult with
+        | Ok output -> lispValString output
+        | Error msg -> msg
+    | Error msg -> sprintf "Failed to parse the input: %s" msg
 
 let print (result: string)=
     Console.WriteLine(result)
 
-let rec repl () =
+let rec loop () =
     Console.Write("* ");
-    () |> Console.ReadLine
+    () |> read
        |> eval
        |> print
-       |> repl
+       |> loop
 
 [<EntryPoint>]
 let main argv =
     printfn "Running FsLisp interpreter..."
-    repl()
+    loop()
     0 // return an integer exit code
 

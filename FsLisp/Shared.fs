@@ -10,10 +10,6 @@ type LispVal =
     | Ratio of int * int
     | StringLiteral of string
 
-type ParseResult =
-    | Success of LispVal list
-    | Failure
-
 let rec lispValString lispVal =
     match lispVal with
     | QuotedExpression exp -> sprintf "'%s" (lispValString exp)

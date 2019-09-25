@@ -19,19 +19,34 @@ module StandardLibrary =
 
 let functionLookup symbol =
     match symbol with
-    | Symbol "equal" -> StandardLibrary.equal
-    | _ -> fun parameters -> List (symbol :: parameters)
+    | Symbol "equal" -> Some StandardLibrary.equal
+    | _ -> None
 
-let execute symbol parameters =
-    functionLookup symbol parameters
+let execute (list: LispVal list) =
+    match list with
+    | funcName :: funcParameters -> 
+        let funcMatch = functionLookup funcName
+        match funcMatch with
+        | Some func -> Ok (func funcParameters)
+        | None -> Error "undefined function"
+    | [] -> Ok (StandardLibrary.NIL)
+
+let elevateToListResult (listOfResults: Result<LispVal, string> list) : Result<LispVal list, string> =
+    let addToResultListIfOk acc element =
+        match acc, element with
+        // Switched from `el :: currentList` since it messed with the order, not sure of the negatives that come along with List.append...
+        | Ok currentList, Ok el -> Ok (List.append currentList [el])
+        | Ok _, Error msg -> Error msg
+        | Error msg, _ -> Error msg
+    listOfResults |> List.fold addToResultListIfOk (Ok List.empty)
 
 let rec eval lispVal =
     match lispVal with
-    | List values -> execute (List.head values) (List.tail values)
-    | QuotedExpression exp -> execute (Symbol "quote") [exp]
-    | DottedList (left, right) -> DottedList (left, right)
-    | Symbol s -> Symbol s
-    | Integer i -> Integer i
-    | Float f -> Float f
-    | Ratio (num, denom) -> Ratio (num, denom)
-    | StringLiteral str -> StringLiteral str
+    | List values -> values |> List.map eval |> elevateToListResult |> Result.bind execute
+    | QuotedExpression exp -> Ok exp
+    | DottedList (left, right) -> Ok (DottedList (left, right))
+    | Symbol s -> Ok (Symbol s)
+    | Integer i -> Ok (Integer i)
+    | Float f -> Ok (Float f)
+    | Ratio (num, denom) -> Ok (Ratio (num, denom))
+    | StringLiteral str -> Ok (StringLiteral str)
