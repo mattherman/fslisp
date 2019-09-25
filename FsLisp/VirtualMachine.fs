@@ -9,27 +9,64 @@ module StandardLibrary =
     let boolToSymbol b =
         if b then T else NIL
 
-    let equal (parameters: LispVal list) =
-        let rec listEqual l =
-            match l with
-                | [_] -> true
-                | x::xs -> if x = (List.head xs) then listEqual xs else false
-                | _ -> true
-        parameters |> listEqual |> boolToSymbol
+    let equal (left: LispVal, right: LispVal) =
+        fun () -> left = right |> boolToSymbol
 
-let functionLookup symbol =
+    let car (list: LispVal list) =
+        fun () -> List.head list
+
+    let cdr (list: LispVal list) =
+        fun () -> List.tail list |> List
+
+let hasParams expectedCount parameters : Result<LispVal list, string> =
+    if expectedCount = List.length parameters then
+        Ok parameters
+    else
+        Error "incorrect number of parameters"
+
+let unpackList parameters =
+    match parameters with
+    | [List x] -> Ok x
+    | _ -> Error "expected parameter to be of type list"
+
+let equal parameters =
+    let constructEquals p =
+        let left = List.item 0 p
+        let right = List.item 1 p
+        StandardLibrary.equal (left, right)
+    parameters 
+    |> hasParams 2
+    |> Result.map constructEquals
+
+let car parameters =
+    let constructCar p =
+        StandardLibrary.car p
+    parameters
+    |> hasParams 1
+    |> Result.bind unpackList
+    |> Result.map constructCar
+
+let cdr parameters =
+    let constructCdr p =
+        StandardLibrary.cdr p
+    parameters
+    |> hasParams 1
+    |> Result.bind unpackList
+    |> Result.map constructCdr
+
+let functionLookup symbol parameters =
     match symbol with
-    | Symbol "equal" -> Some StandardLibrary.equal
-    | _ -> None
+    | Symbol "equal" -> equal parameters
+    | Symbol "car" -> car parameters
+    | Symbol "cdr" -> cdr parameters
+    | _ -> Error "undefined function"
 
 let execute (list: LispVal list) =
     match list with
     | funcName :: funcParameters -> 
-        let funcMatch = functionLookup funcName
-        match funcMatch with
-        | Some func -> Ok (func funcParameters)
-        | None -> Error "undefined function"
-    | [] -> Ok (StandardLibrary.NIL)
+        functionLookup funcName funcParameters 
+        |> Result.map (fun funcMatch -> funcMatch()) 
+    | [] -> Ok StandardLibrary.NIL
 
 let elevateToListResult (listOfResults: Result<LispVal, string> list) : Result<LispVal list, string> =
     let addToResultListIfOk acc element =
