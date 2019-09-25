@@ -8,7 +8,7 @@ let execute symbol parameters =
 let rec eval lispVal =
     match lispVal with
     | List values -> execute (List.head values) (List.tail values)
-    | QuotedExpression exp -> exp
+    | QuotedExpression exp -> execute List [ Symbol "quote"; exp]
     | DottedList (left, right) -> DottedList (left, right)
     | Symbol s -> Symbol s
     | Integer i -> Integer i
