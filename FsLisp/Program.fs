@@ -5,7 +5,9 @@ open Shared
 let eval (text: string) =
     let result = text |> Parser.parse
     match result with
-    | Success values -> List.head values |> VirtualMachine.eval |> string
+    | Success values -> 
+        Console.WriteLine(lispValString (List.head values))
+        List.head values |> VirtualMachine.eval |> lispValString
     | Failure -> "Failed to parse the input"
 
 let print (result: string)=
