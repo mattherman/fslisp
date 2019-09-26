@@ -18,6 +18,16 @@ module StandardLibrary =
     let cdr (list: LispVal list) =
         fun () -> List.tail list |> List
 
+type Function = {
+    Name: string;
+    Parameters: string list
+    Body: LispVal;
+}
+
+type Symbol =
+    | Function of Function
+    | Variable
+
 let hasParams expectedCount parameters : Result<LispVal list, string> =
     if expectedCount = List.length parameters then
         Ok parameters
@@ -87,3 +97,22 @@ let rec eval lispVal =
     | Float f -> Ok (Float f)
     | Ratio (num, denom) -> Ok (Ratio (num, denom))
     | StringLiteral str -> Ok (StringLiteral str)
+
+// TODO for lambda
+// * Introduce concept of scope where a set of symbols are defined
+// * Define all standard library functions as part of a root scope
+// * Update functionLookup to instead rely on symbols in the current scope
+// * Update function execution to create a new scope and define symbols for parameters
+// * Add lambda standard library function that adds a new function to the scope
+
+// ( (lambda (x) (* 2 x) ) 4)
+// List [ 
+//   List [ 
+//     Symbol "lambda"; 
+//     List [ Symbol "x"; ]; 
+//     List [ Symbol "*"; Integer 2; Symbol "x"; ] 
+//   ]; 
+//   Integer 4 
+// ]
+// Define symbol "lambda_<some-random-string>" as a function with one parameter of symbol "x"
+// Function symbol points to body LispVal: 'List [ Symbol "*"; Integer 2; Symbol "x"; ]'
